@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy 5 Months — Donna & Saurabh (Albums)</title>
+  <style>
+    :root {
+      --bg1: #0f1024; --bg2: #2c1050; --accent: #ff6b9b; --accent-2: #ffd6e6;
+      --text: #ffffff; --muted: #e8e8f0; --card: rgba(255,255,255,0.1); --outline: rgba(255,255,255,0.25);
+    }
+    .theme-lavender { --bg1:#1a1633; --bg2:#5c3c92; --accent:#b96dff; --accent-2:#e7d7ff; }
+    .theme-sunset   { --bg1:#1b0b0b; --bg2:#7a1f3d; --accent:#ff7a59; --accent-2:#ffd2c7; }
+    .theme-ocean    { --bg1:#00141f; --bg2:#003b5c; --accent:#4fd1c5; --accent-2:#c6fff7; }
+    .theme-forest   { --bg1:#0b1a14; --bg2:#1f4636; --accent:#8cd7a0; --accent-2:#e2ffe8; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 800px at 20% 10%, var(--bg2), transparent),
+                  radial-gradient(1000px 900px at 80% 0%, rgba(255,255,255,0.08), transparent),
+                  linear-gradient(160deg, var(--bg1), var(--bg2));
+      background-attachment: fixed; overflow-x: hidden;
+    }
+    header { text-align:center; padding:48px 16px 16px; }
+    .title { font-weight:800; font-size:clamp(28px,5vw,56px); margin:0; letter-spacing:-0.02em; text-shadow:0 6px 36px rgba(0,0,0,0.5); }
+    .subtitle { margin:12px auto 0; max-width:800px; font-size:clamp(14px,2.2vw,18px); color:var(--muted); opacity:.95; }
+    .editable { outline:2px dashed transparent; transition:outline-color .2s ease; }
+    .editable:focus { outline-color: var(--accent); border-radius:12px; }
+
+    .controls { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; padding:16px; }
+    .btn, select {
+      border:1px solid var(--outline); background:var(--card); color:var(--text); padding:10px 14px; border-radius:999px; font-size:14px; cursor:pointer;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: transform .12s ease, background .25s ease, border-color .25s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(45deg, var(--accent), var(--accent-2)); color:#111; border-color:transparent; font-weight:700; }
+    .btn.small { padding:6px 10px; font-size:12px; }
+
+    .badge { position:fixed; top:16px; left:16px; background:rgba(0,0,0,.35); border:1px solid var(--outline); color:var(--accent-2);
+             padding:8px 12px; border-radius:999px; font-size:12px; backdrop-filter: blur(6px); z-index:50; }
+
+    #albums { width:min(1200px,92%); margin:24px auto 64px; display:flex; flex-direction:column; gap:20px; }
+    .album { border:1px solid var(--outline); border-radius:18px; background:rgba(255,255,255,0.06); overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.25); }
+    .album-header { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 14px; background:rgba(0,0,0,0.25); }
+    .album-title { margin:0; font-size:clamp(18px,3vw,24px); font-weight:800; letter-spacing:-0.01em; }
+    .album-actions { display:flex; gap:8px; align-items:center; }
+    .album.collapsed .gallery { display:none; }
+
+    .gallery { width:100%; padding:14px; display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:14px; }
+    figure { margin:0; position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--outline); background:rgba(255,255,255,0.06); aspect-ratio:4/5; display:flex; align-items:center; justify-content:center; }
+    img.photo { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .lightbox { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index:100; }
+    .lightbox.open { display:flex; }
+    .lightbox img { max-width:min(92vw,1200px); max-height:86vh; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.55); }
+
+    .heart { position:fixed; width:14px; height:14px; transform:translate(-50%,-50%) rotate(45deg); background:var(--accent); pointer-events:none; animation: floatUp 1200ms ease-out forwards; }
+    .heart::before, .heart::after { content:''; position:absolute; width:14px; height:14px; border-radius:50%; background:var(--accent); }
+    .heart::before { left:-7px; } .heart::after { top:-7px; }
+    @keyframes floatUp { 0% {opacity:1; transform:translate(-50%,-50%) rotate(45deg) scale(1);} 100% {opacity:0; transform:translate(-50%,-160%) rotate(45deg) scale(.6);} }
+
+    footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; opacity:.9; }
+    .accent { color:var(--accent-2); font-weight:700; }
+  </style>
+</head>
+<body class="theme-lavender">
+  <div class="badge">Tip: Click month titles to rename. Add photos per month. Then “Save as .html”.</div>
+  <header>
+    <h1 class="title editable" contenteditable>Happy 5 Months, Saurabh</h1>
+    <p class="subtitle editable" contenteditable>Five months of us — curated by Donna</p>
+  </header>
+
+  <section class="controls">
+    <button id="addAlbumBtn" class="btn">Add album</button>
+    <button id="saveBtn" class="btn primary">Save as .html</button>
+    <select id="themePicker" title="Theme">
+      <option value="theme-lavender">Lavender</option>
+      <option value="">Midnight</option>
+      <option value="theme-sunset">Sunset</option>
+      <option value="theme-ocean">Ocean</option>
+      <option value="theme-forest">Forest</option>
+    </select>
+  </section>
+
+  <div id="albums">
+    <section class="album">
+      <div class="album-header">
+        <h2 class="album-title editable" contenteditable>April</h2>
+        <div class="album-actions">
+          <input id="in-apr" type="file" accept="image/*" multiple hidden>
+          <label class="btn small" for="in-apr">Add photos</label>
+          <button class="btn small collapse-btn" type="button">Collapse</button>
+        </div>
+      </div>
+      <div class="gallery"></div>
+    </section>
+    <section class="album">
+      <div class="album-header">
+        <h2 class="album-title editable" contenteditable>May</h2>
+        <div class="album-actions">
+          <input id="in-may" type="file" accept="image/*" multiple hidden>
+          <label class="btn small" for="in-may">Add photos</label>
+          <button class="btn small collapse-btn" type="button">Collapse</button>
+        </div>
+      </div>
+      <div class="gallery"></div>
+    </section>
+    <section class="album">
+      <div class="album-header">
+        <h2 class="album-title editable" contenteditable>June</h2>
+        <div class="album-actions">
+          <input id="in-jun" type="file" accept="image/*" multiple hidden>
+          <label class="btn small" for="in-jun">Add photos</label>
+          <button class="btn small collapse-btn" type="button">Collapse</button>
+        </div>
+      </div>
+      <div class="gallery"></div>
+    </section>
+    <section class="album">
+      <div class="album-header">
+        <h2 class="album-title editable" contenteditable>July</h2>
+        <div class="album-actions">
+          <input id="in-jul" type="file" accept="image/*" multiple hidden>
+          <label class="btn small" for="in-jul">Add photos</label>
+          <button class="btn small collapse-btn" type="button">Collapse</button>
+        </div>
+      </div>
+      <div class="gallery"></div>
+    </section>
+    <section class="album">
+      <div class="album-header">
+        <h2 class="album-title editable" contenteditable>August</h2>
+        <div class="album-actions">
+          <input id="in-aug" type="file" accept="image/*" multiple hidden>
+          <label class="btn small" for="in-aug">Add photos</label>
+          <button class="btn small collapse-btn" type="button">Collapse</button>
+        </div>
+      </div>
+      <div class="gallery"></div>
+    </section>
+  </div>
+
+  <footer>Made with <span class="accent">love</span>. Click anywhere to release floating hearts.</footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Full size image viewer">
+    <img alt="Full size" />
+  </div>
+
+  <script>
+    const albums = document.getElementById('albums');
+    const addAlbumBtn = document.getElementById('addAlbumBtn');
+    const themePicker = document.getElementById('themePicker');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('img');
+
+    function wireAlbum(album) {
+      const input = album.querySelector('input[type=file]');
+      const grid = album.querySelector('.gallery');
+      const collapseBtn = album.querySelector('.collapse-btn');
+      if (input) {
+        input.addEventListener('change', async (e) => {
+          const files = Array.from(e.target.files || []);
+          for (const f of files) {
+            if (!f.type.startsWith('image/')) continue;
+            const dataUrl = await toDataURL(f);
+            addPhoto(grid, dataUrl, f.name);
+          }
+          input.value='';
+        });
+      }
+      if (collapseBtn) {
+        collapseBtn.addEventListener('click', () => {
+          album.classList.toggle('collapsed');
+          collapseBtn.textContent = album.classList.contains('collapsed') ? 'Expand' : 'Collapse';
+        });
+      }
+      grid.addEventListener('click', (e) => {
+        const img = e.target.closest('img.photo');
+        if (!img) return;
+        lightboxImg.src = img.src; lightbox.classList.add('open');
+      });
+    }
+    document.querySelectorAll('.album').forEach(wireAlbum);
+
+    addAlbumBtn.addEventListener('click', () => {
+      const name = prompt('Album name (e.g., September 2025):', '') || 'New Album';
+      const id = 'input-' + Math.random().toString(36).slice(2);
+      const template = `
+      <section class="album">
+        <div class="album-header">
+          <h2 class="album-title editable" contenteditable>${name}</h2>
+          <div class="album-actions">
+            <input id="${id}" type="file" accept="image/*" multiple hidden>
+            <label class="btn small" for="${id}">Add photos</label>
+            <button class="btn small collapse-btn" type="button">Collapse</button>
+          </div>
+        </div>
+        <div class="gallery"></div>
+      </section>`;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = template.trim();
+      const album = wrapper.firstElementChild;
+      albums.appendChild(album);
+      wireAlbum(album);
+    });
+
+    function addPhoto(container, src, alt='Our photo') {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.className = 'photo'; img.loading='lazy'; img.decoding='async'; img.src = src; img.alt = alt;
+      fig.appendChild(img); container.appendChild(fig);
+    }
+    function toDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(file);
+      });
+    }
+
+    lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+    themePicker.addEventListener('change', (e) => { document.body.className = e.target.value; });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('button, label, input, select, a, #lightbox')) return;
+      spawnHearts(e.clientX, e.clientY);
+    });
+    function spawnHearts(x, y) {
+      for (let i=0;i<14;i++) {
+        const h = document.createElement('div'); h.className='heart';
+        const dx = (Math.random()-0.5)*120, dy = -80 - Math.random()*120;
+        const s = 0.7 + Math.random()*0.9, d = 700 + Math.random()*900;
+        h.style.left = x+dx+'px'; h.style.top = y+dy+'px'; h.style.transform += ` scale(${s})`; h.style.animationDuration = d+'ms';
+        document.body.appendChild(h); setTimeout(() => h.remove(), d+40);
+      }
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      document.querySelectorAll('.editable').forEach(el => el.blur());
+      const clone = document.documentElement.cloneNode(true);
+      const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+      const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'for-saurabh-albums.html';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+  </script>
+</body>
+</html>
