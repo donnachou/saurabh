@@ -1,1 +1,1 @@
-# saurabh
+Static one-file site. Upload `index.html` and `.nojekyll` to the repo root. Set Pages to 'Deploy from a branch'.
